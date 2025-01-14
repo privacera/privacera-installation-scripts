@@ -1,3 +1,6 @@
+# Deployment environment type, typically the cloud environment in which you are deploying.
+DEPLOYMENT_ENV_TYPE=""  # Example: "AWS", "AZURE" or "GCP"
+
 # Deployment environment name, typically the name of the deployment or project.
 DEPLOYMENT_ENV_NAME=""  # Example: "privacera-prod" or "privacera-dev"
 
