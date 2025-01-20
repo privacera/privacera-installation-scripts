@@ -30,7 +30,7 @@ if [ -z "$PRIVACERA_VERSION" ]; then
   PRIVACERA_VERSION=$(clean_version "$PRIV_MGR_IMAGE_TAG")
 fi
 
-# Function to compare version strings (e.g., "9.0.4.1-1")
+# Function to compare version strings
 version_le() {
   [ "$(printf '%s\n' "$1" "$2" | sort -V | head -n 1)" = "$1" ]
 }
@@ -42,7 +42,7 @@ echo "VERSION_COMPARE: $VERSION_COMPARE"
 if [[ "$VERSION_COMPARE" =~ [a-zA-Z] ]]; then
   PRIV_MGR_BASE_URL=${PRIV_MGR_PACKAGE%/privacera-manager.tar.gz}
 else
-  if ! version_le "$VERSION_COMPARE" "9.0.9.1"; then
+  if ! version_le "$VERSION_COMPARE" "9.9.0.1"; then
     PRIV_MGR_BASE_URL=$(echo $PRIV_MGR_PACKAGE | awk -F/ '{print $1 "//" $3}')
     PRIVACERA_MANIFEST_URL="${PRIV_MGR_BASE_URL}/manifests/${PRIVACERA_VERSION}/release-manifest.yaml"
     echo "Manifest URL: $PRIVACERA_MANIFEST_URL"
@@ -69,7 +69,7 @@ wget $PRIV_MGR_PACKAGE -O privacera-manager.tar.gz
 # Extract the tarball
 cd ~/privacera
 tar -zxf ~/privacera/downloads/privacera-manager.tar.gz
-if ! version_le "$VERSION_COMPARE" "9.0.4.1"; then
+if ! version_le "$VERSION_COMPARE" "9.9.0.1"; then
   echo "Downloading latest manifest file...."
   wget ${PRIVACERA_MANIFEST_URL} -O ~/privacera/privacera-manager/ansible/privacera-docker/privacera-manifest/release-manifest.yaml
 fi
