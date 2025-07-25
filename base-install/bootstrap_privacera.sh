@@ -85,6 +85,24 @@ K8S_CLUSTER_NAME=$(kubectl config current-context | awk -F'/' '{print $NF}')
 # Replace <PLEASE_CHANGE> with the actual Kubernetes cluster name in vars.kubernetes.yml
 replace_in_file "custom-vars/vars.kubernetes.yml" "K8S_CLUSTER_NAME: \"<PLEASE_CHANGE>\"" "K8S_CLUSTER_NAME: \"$K8S_CLUSTER_NAME\""
 
+# Enable HA Settings in Custom Vars
+cd ~/privacera/privacera-manager/config
+cp sample-vars/vars.kubernetes.ha.yml custom-vars/
+
+# Comment out all lines except SOLR_K8S_CLUSTER_SIZE and ZOOKEEPER_CLUSTER_SIZE
+# Comment out Portal HA settings
+replace_in_file "custom-vars/vars.kubernetes.ha.yml" "PRIVACERA_PORTAL_K8S_HA_ENABLE:" "# PRIVACERA_PORTAL_K8S_HA_ENABLE:"
+replace_in_file "custom-vars/vars.kubernetes.ha.yml" "PORTAL_K8S_REPLICAS:" "# PORTAL_K8S_REPLICAS:"
+
+# Comment out Ranger settings
+replace_in_file "custom-vars/vars.kubernetes.ha.yml" "RANGER_K8S_REPLICAS:" "# RANGER_K8S_REPLICAS:"
+
+# Comment out Dataserver settings
+replace_in_file "custom-vars/vars.kubernetes.ha.yml" "DATASERVER_K8S_CLUSTER_SIZE:" "# DATASERVER_K8S_CLUSTER_SIZE:"
+
+# Comment out Auditserver settings
+replace_in_file "custom-vars/vars.kubernetes.ha.yml" "AUDITSERVER_K8S_REPLICAS:" "# AUDITSERVER_K8S_REPLICAS:"
+
 # Conditionally handle EFS_FSID if it is set
 if [[ "${DEPLOYMENT_ENV_TYPE,,}" == "aws" && -n "$EFS_FSID" ]]; then
   cd ~/privacera/privacera-manager/config
