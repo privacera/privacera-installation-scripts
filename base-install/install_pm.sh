@@ -16,7 +16,7 @@ if [ -z "$DEPLOYMENT_ENV_NAME" ] || [ -z "$PRIV_MGR_IMAGE" ] || [ -z "$PRIV_MGR_
 fi
 
 # Derive other environment variables
-PRIVACERA_HUB_HOSTNAME=$(echo $PRIV_MGR_IMAGE | awk -F'/' '{print $1}')
+PRIVACERA_HUB_HOSTNAME=$(echo $PRIV_MGR_IMAGE | awk '{sub("/[^/]*$", "", $0); print $0}')
 PRIV_MGR_IMAGE_TAG=$(echo $PRIV_MGR_IMAGE | awk -F':' '{print $2}')
 PRIVACERA_MANIFEST_URL=""
 
