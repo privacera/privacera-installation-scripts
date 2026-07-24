@@ -33,15 +33,26 @@ docker_login() {
 }
 PRIVACERA_HUB_URL=$(echo $PRIV_MGR_IMAGE | awk -F'/' '{print $1}')
 docker_login $PRIVACERA_HUB_URL $PRIVACERA_HUB_USER $PRIVACERA_HUB_PASSWORD
-docker_login $DESTINATION_HUB_URL $DESTINATION_HUB_USER $DESTINATION_HUB_PASSWORD
+
+# Destination hub login/tag/push are only needed for default and push flows.
+# Pull-only mode keeps images locally and does not require destination hub vars.
+if [ "$action" != "pull" ]; then
+  docker_login $DESTINATION_HUB_URL $DESTINATION_HUB_USER $DESTINATION_HUB_PASSWORD
+fi
 
 echo "Pulling the Privacera Manager Image from Privacera Hub..."
 docker pull $PRIV_MGR_IMAGE
-docker tag $PRIV_MGR_IMAGE $DESTINATION_HUB_URL/privacera-manager:$PRIVACERA_VERSION
-echo "==========================================================="
-echo "Pushing the Privacera Manager Image to Destination Hub..."
-docker push $DESTINATION_HUB_URL/privacera-manager:$PRIVACERA_VERSION
-echo "==========================================================="
+
+if [ "$action" != "pull" ]; then
+  docker tag $PRIV_MGR_IMAGE $DESTINATION_HUB_URL/privacera-manager:$PRIVACERA_VERSION
+  echo "==========================================================="
+  echo "Pushing the Privacera Manager Image to Destination Hub..."
+  docker push $DESTINATION_HUB_URL/privacera-manager:$PRIVACERA_VERSION
+  echo "==========================================================="
+else
+  echo "Pull-only mode: keeping Privacera Manager image locally (no tag/push)."
+  echo "==========================================================="
+fi
 
 ########################################################
 ########################################################
@@ -52,8 +63,8 @@ chmod +x pm-airgap-installation-v2.sh
 
 echo "===================================================="
 echo "Running Airgap Script.."
-if [ "$action" = "" ]; then
-  . $CURRENT_DIR/pm-airgap-installation-v2.sh
+if [ "$action" = "" ] || [ "$action" = "pull" ]; then
+  . $CURRENT_DIR/pm-airgap-installation-v2.sh $action
 elif [ "$action" = "push" ]; then
   . $CURRENT_DIR/pm-airgap-installation-v2.sh $action
 else
